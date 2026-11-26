@@ -161,8 +161,8 @@ flowchart LR
 You only need **Python 3** installed.
 
 ```bash
-git clone https://github.com/biman-cybersec/SciCalc---Scientific-Calculator.git
-cd SciCalc---Scientific-Calculator
+git clone https://github.com/username/repository.git
+cd repository
 ```
 
 **Web app on your computer**
