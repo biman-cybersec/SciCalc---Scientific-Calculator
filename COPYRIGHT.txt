@@ -1,0 +1,11 @@
+SciCalc
+Copyright (c) 2026 BIMAN SHIL. Licensed under the SciCalc License (see the file LICENSE).
+     
+This notice marks who wrote the calculator code (scicalc/, webapp/ and the scripts in this folder).
+Copyright exists automatically when you write the work; this file and the footer simply state it.
+It is NOT a patent. A patent has to be applied for at a patent office (see README.txt).
+
+Third-party parts included in webapp/pyodide/:
+  Pyodide  (https://github.com/pyodide/pyodide)  - Mozilla Public License 2.0
+  CPython standard library bundled with Pyodide  - Python Software Foundation License
+These keep their own licences and copyright owners; they are not covered by the notice above.

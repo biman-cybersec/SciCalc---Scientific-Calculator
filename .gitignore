@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.vscode/
+.ruff_cache/
+.pyright/
+undefined/

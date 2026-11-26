@@ -1,0 +1,7 @@
+{
+  "include": ["scicalc", "calculator.py", "run_tests.py", "serve.py", "build_app.py", "get_pyodide.py"],
+  "exclude": ["**/__pycache__", "webapp"],
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "basic",
+  "reportMissingModuleSource": false
+}

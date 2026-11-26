@@ -1,0 +1,58 @@
+SciCalc License (custom, source-available, non-commercial)
+
+Copyright (c) 2026 BIMAN SHIL. All rights reserved.
+
+"SciCalc" means the software in this repository written by BIMAN SHIL (the "Author"): the folders scicalc/ and
+webapp/ (except webapp/pyodide/), the scripts in the main folder, the tests and the documentation (the "Software").
+
+1. WHAT YOU MAY DO (free of charge)
+   a. Read and study the source code.
+   b. Run the Software on your own devices for personal, educational or other non-commercial purposes.
+   c. Make private changes for your own learning or use, and keep those changes to yourself.
+   d. Quote small parts of the code (a few functions) in your own non-commercial learning work, if you name
+      the Author and this project as the source.
+
+2. WHAT YOU MAY NOT DO without the Author's written permission
+   a. Sell the Software, or any copy or modified version of it, or include it in anything that is sold.
+   b. Use the Software, or any part of it, in a commercial product, a paid service or for commercial gain.
+   c. Publish, upload or distribute the Software or a modified version (other than as allowed in section 3).
+   d. Remove or change the copyright notice, the credit in the app footer or this license.
+   e. Present the Software, or work derived from it, as your own, or use the Author's name or the name SciCalc
+      to promote anything.
+   f. Sublicense the Software or give anyone else rights that this license does not give you.
+
+3. GITHUB
+   If the Author publishes the Software in a public GitHub repository, the GitHub Terms of Service let other
+   GitHub users view it and fork it on GitHub. That permission covers only what the GitHub Terms say; it does not
+   grant any right in section 2.
+
+4. COMMERCIAL OR OTHER USE
+   Ask the Author for a separate written license: biman.shil.techbuddy@gmail.com.
+
+5. THIRD-PARTY PARTS
+   The folder webapp/pyodide/ contains Pyodide (Mozilla Public License 2.0) and the Python standard library
+   (Python Software Foundation License). They belong to their own authors and keep their own licenses. This
+   license does not apply to them and does not change their terms.
+
+6. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING FITNESS FOR A
+   PARTICULAR PURPOSE, ACCURACY OF RESULTS AND NON-INFRINGEMENT. Results (including health, finance, engineering
+   and science functions) are for learning and general use; do not rely on them for medical, legal, financial
+   or safety decisions.
+
+7. LIMIT OF LIABILITY
+   TO THE EXTENT THE LAW ALLOWS, THE AUTHOR IS NOT LIABLE FOR ANY CLAIM, DAMAGE OR LOSS ARISING FROM THE SOFTWARE
+   OR ITS USE.
+
+8. ENDING
+   If you break this license, your rights under it end automatically. You must then stop using the Software and
+   delete your copies. Sections 5, 6, 7 and 9 remain.
+
+9. LAW
+   This license is governed by the laws of INDIA. Courts of West Bengal have jurisdiction.
+
+10. CHANGES
+   The Author may release later versions of the Software under different terms. A version you already received
+   stays under the license it came with.
+
+By using, copying or changing the Software you accept this license.

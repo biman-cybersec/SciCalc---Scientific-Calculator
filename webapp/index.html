@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SciCalc</title>
+<meta name="description" content="Offline scientific calculator with 1200+ functions and 260+ constants">
+<meta name="theme-color" content="#0a1f3d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SciCalc">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="loading" role="status">
+  <div class="spinner" aria-hidden="true"></div>
+  <div id="loadingText">Starting the calculator engine&hellip;</div>
+  <div class="small-note" id="loadingNote">The first start takes a few seconds. After that it works offline.</div>
+</div>
+
+<div id="app">
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 38 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M2 13 C 8 -1, 14 -1, 19 13 S 30 27, 36 13"/><path d="M2 24 H36 M2 21 V27 M36 21 V27" stroke-width="1.2" opacity=".7"/>
+      </svg>
+      <h1>SciCalc</h1>
+    </div>
+    <button class="btn" id="installBtn" hidden>Install app</button>
+    <div class="status"><span class="dot" id="dot"></span><span id="statusText">starting</span></div>
+  </header>
+
+  <div class="layout">
+    <section aria-label="Calculator">
+      <div class="screen">
+        <span class="mark tr" aria-hidden="true"></span><span class="mark bl" aria-hidden="true"></span>
+        <div class="modes" id="modeBar" aria-label="Current modes (tap to change)"></div>
+        <div class="prev" id="prev"></div>
+        <input id="expr" type="text" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               aria-label="Expression" placeholder="0" enterkeyhint="go">
+        <div class="dim" aria-hidden="true"></div>
+        <div class="result" id="result" role="status" aria-live="polite" title="Tap to copy"></div>
+        <div class="decimal" id="decimal"></div>
+        <div class="detail" id="detail"></div>
+      </div>
+
+      <div class="keypad two collapsed" id="keypad">
+        <button class="toggle-sci" id="toggleSci" aria-expanded="false">Show scientific keys</button>
+        <div class="grid sci" id="sci"></div>
+        <div class="grid num" id="num"></div>
+      </div>
+    </section>
+
+    <aside class="panel" aria-label="Tools">
+      <div class="tabs" role="tablist" id="tabs">
+        <button role="tab" aria-selected="true" data-tab="history">History</button>
+        <button role="tab" aria-selected="false" data-tab="functions">Functions</button>
+        <button role="tab" aria-selected="false" data-tab="constants">Constants</button>
+        <button role="tab" aria-selected="false" data-tab="memory">Memory</button>
+        <button role="tab" aria-selected="false" data-tab="settings">Settings</button>
+      </div>
+
+      <div class="tabpane" id="tab-history" role="tabpanel"></div>
+
+      <div class="tabpane" id="tab-functions" role="tabpanel" hidden>
+        <div class="row">
+          <input type="search" id="fnSearch" placeholder="Search 1200+ functions" aria-label="Search functions">
+          <select id="fnCat" aria-label="Category"></select>
+        </div>
+        <div id="fnDetail"></div>
+        <ul class="list" id="fnList"></ul>
+      </div>
+
+      <div class="tabpane" id="tab-constants" role="tabpanel" hidden>
+        <div class="row">
+          <input type="search" id="coSearch" placeholder="Search constants" aria-label="Search constants">
+          <select id="coCat" aria-label="Category"></select>
+        </div>
+        <ul class="list" id="coList"></ul>
+      </div>
+
+      <div class="tabpane" id="tab-memory" role="tabpanel" hidden></div>
+      <div class="tabpane" id="tab-settings" role="tabpanel" hidden></div>
+    </aside>
+  </div>
+  <footer id="footer" aria-label="Credits"></footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="credits.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
