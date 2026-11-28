@@ -28,9 +28,10 @@ if __name__ == "__main__":      # run directly (e.g. VS Code "Run Python File"):
 from typing import Any
 import json
 import math
+import re
 from fractions import Fraction
 
-from .errors import CalcError
+from .errors import CalcError, CalcSyntaxError
 from .registry import REGISTRY
 from .arithmetic import Lst, Mat
 from .engine import ANGLE_MODES, Calculator
@@ -59,6 +60,84 @@ def _plain(v):
     if isinstance(v, float):
         return v if math.isfinite(v) else str(v)
     return str(v)
+
+
+_MAX_CURVES = 8
+_MAX_SAMPLES = 2000
+_Y_EQUALS = re.compile(r"^\s*(?:y|f\s*\(\s*x\s*\))\s*=(?!=)\s*(.+)$", re.IGNORECASE)
+
+
+class _Curve:
+    """One graph line y = f(x): evaluates the text with X set, never raises (a bad point is None)."""
+
+    def __init__(self, base, text, angle):
+        m = _Y_EQUALS.match(str(text))
+        self.text = (m.group(1) if m else str(text)).strip()
+        self.calc = Calculator(base.registry)
+        self.calc.angle = angle                      # the graph has its own angle setting (radians by default)
+        self.calc.variables.update(base.variables)
+        self.calc.user_functions = base.user_functions
+        self.error = None                            # the first error message, kept for the screen
+        self.fatal = not self.text                   # a syntax problem: no point can ever work
+        if self.fatal:
+            self.error = "Type an expression such as sin(x) or x^2-3"
+            return
+        for probe in (1.0, 0.5, 2.0):                # a syntax error shows up at once; a math error at one point is fine
+            try:
+                self.calc.variables["X"] = probe
+                self.calc.evaluate(self.text)
+                break
+            except CalcSyntaxError as err:
+                self.fatal = True
+                self.error = f"{err.message}: {err.detail}" if err.detail else err.message
+                return
+            except CalcError:
+                continue
+            except Exception:                        # nothing may leak out of the engine
+                continue
+        self.count = 0
+
+    def at(self, x):
+        if self.fatal:
+            return None
+        self.count += 1
+        if self.count % 200 == 0:
+            self.calc.history.clear()
+        self.calc.variables["X"] = x
+        try:
+            v = self.calc.evaluate(self.text).value
+            if isinstance(v, complex):
+                if abs(v.imag) > 1e-9 * max(1.0, abs(v.real)):
+                    return None
+                v = v.real
+            y = float(v)
+        except CalcError as err:
+            if self.error is None:
+                self.error = f"{err.message}: {err.detail}" if err.detail else err.message
+            return None
+        except Exception:
+            return None
+        return y if math.isfinite(y) else None
+
+
+def _angle_ok(angle):
+    return angle if angle in ANGLE_MODES else "rad"
+
+
+def _bisect(g, a, b, ga):
+    """A zero of g between a and b (g(a) and g(b) have opposite signs), or None if g breaks on the way."""
+    for _ in range(80):
+        m = (a + b) / 2
+        gm = g(m)
+        if gm is None:
+            return None
+        if gm == 0:
+            return m
+        if (gm < 0) == (ga < 0):
+            a, ga = m, gm
+        else:
+            b = m
+    return (a + b) / 2
 
 
 _DISPLAY_KINDS = ("norm", "fix", "sci", "eng", "custom")
@@ -153,6 +232,109 @@ class Engine:
         c.complex_polar = bool(want["polar"])
         return {"ok": True, "settings": self.settings()}
 
+    # ---------------- graphing ----------------
+    def _graph_args(self, exprs, xmin, xmax, n):
+        if not isinstance(exprs, list) or not exprs or len(exprs) > _MAX_CURVES:
+            raise ValueError(f"give 1 to {_MAX_CURVES} expressions")
+        xmin, xmax, n = float(xmin), float(xmax), int(n)
+        if not (math.isfinite(xmin) and math.isfinite(xmax)) or xmin >= xmax:
+            raise ValueError("the x range is not valid")
+        if not 2 <= n <= _MAX_SAMPLES:
+            raise ValueError(f"the number of points must be 2 to {_MAX_SAMPLES}")
+        return xmin, xmax, n
+
+    def sample(self, exprs, xmin, xmax, n=400, angle="rad"):
+        """y values of each expression at n evenly spaced x from xmin to xmax (None where the value is not a real number).
+
+        {"ok": True, "curves": [{"ys": [...], "error": None or "message"}, ...]}.  x[i] = xmin + i*(xmax-xmin)/(n-1).
+        """
+        try:
+            xmin, xmax, n = self._graph_args(exprs, xmin, xmax, n)
+        except (ValueError, TypeError) as err:
+            return {"ok": False, "error": str(err)}
+        angle = _angle_ok(angle)
+        step = (xmax - xmin) / (n - 1)
+        out = []
+        for text in exprs:
+            c = _Curve(self.calc, text, angle)
+            ys = [None] * n if c.fatal else [c.at(xmin + i * step) for i in range(n)]
+            if any(y is not None for y in ys):
+                error = None                              # some points are fine; a gap (like 1/x at 0) is not an error
+            else:
+                error = c.error or "nothing to draw in this range"
+            out.append({"ys": ys, "error": error})
+        return {"ok": True, "curves": out}
+
+    def analyze(self, exprs, xmin, xmax, angle="rad"):
+        """Where each curve crosses the x axis and where curves cross each other, inside [xmin, xmax].
+
+        {"ok": True, "roots": [{"curve", "x"}], "intersections": [{"a", "b", "x", "y"}]}.  Points where a curve only touches
+        the axis without crossing it (such as x^2 at 0) are not found; jumps such as tan(x) at pi/2 are not counted.
+        """
+        try:
+            xmin, xmax, n = self._graph_args(exprs, xmin, xmax, 1500)
+        except (ValueError, TypeError) as err:
+            return {"ok": False, "error": str(err)}
+        angle = _angle_ok(angle)
+        step = (xmax - xmin) / (n - 1)
+        xs = [xmin + i * step for i in range(n)]
+        curves = [_Curve(self.calc, t, angle) for t in exprs]
+        ys = [[None] * n if c.fatal else [c.at(x) for x in xs] for c in curves]
+        roots, crossings = [], []
+        def scan(i, j):
+            fa, ga = curves[i], (curves[j] if j is not None else None)
+            if j is None:
+                d = ys[i]
+            else:
+                d = [None if p is None or q is None else p - q for p, q in zip(ys[i], ys[j])]
+
+            def diff(x):
+                a = fa.at(x)
+                if a is None:
+                    return None
+                if ga is None:
+                    return a
+                b = ga.at(x)
+                return None if b is None else a - b
+            found = []
+            for k in range(n):
+                here = d[k]
+                if here is None:
+                    continue
+                nxt = d[k + 1] if k + 1 < n else None
+                if here == 0:
+                    found.append(xs[k])
+                elif nxt is not None and here * nxt < 0:
+                    x = _bisect(diff, xs[k], xs[k + 1], here)
+                    if x is None:
+                        continue
+                    scale = max(1.0, abs(fa.at(x) or 0.0))
+                    r = diff(x)
+                    if r is not None and abs(r) <= 1e-6 * scale:        # a real crossing, not a jump through infinity
+                        found.append(x)
+            clean = []
+            for x in found:
+                if not clean or abs(x - clean[-1]) > 1e-9 * max(1.0, abs(x)):
+                    clean.append(x)
+            return clean, fa
+
+        for i, c in enumerate(curves):
+            if c.fatal:
+                continue
+            xs_found, fa = scan(i, None)
+            for x in xs_found[:60]:
+                roots.append({"curve": i, "x": x})
+        for i in range(len(curves)):
+            for j in range(i + 1, len(curves)):
+                if curves[i].fatal or curves[j].fatal:
+                    continue
+                xs_found, fa = scan(i, j)
+                for x in xs_found[:60]:
+                    y = fa.at(x)
+                    if y is not None:
+                        crossings.append({"a": i, "b": j, "x": x, "y": y})
+        return {"ok": True, "roots": roots, "intersections": crossings}
+
     # ---------------- browsing ----------------
     def functions(self):
         if self._functions_cache is None:
@@ -197,7 +379,7 @@ class Engine:
 
 
 _METHODS = ("evaluate", "history", "clear_history", "variables", "user_functions", "delete_function", "reset", "settings", "configure",
-            "functions", "constants", "categories", "info", "save_state", "load_state")
+            "functions", "constants", "categories", "info", "save_state", "load_state", "sample", "analyze")
 _ENGINE: list[Any] = [None]
 
 

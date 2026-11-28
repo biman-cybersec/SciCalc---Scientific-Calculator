@@ -75,6 +75,7 @@ The first start takes a few seconds while the Python engine loads (about 14 MB i
 - **Complex numbers**, lists and matrices as first-class values.
 - Your own **user-defined functions**, and error messages that say what went wrong and where (`Syntax ERROR`, `Math ERROR`, `Argument ERROR`).
 - Tables of values for any function with `table1` and `table2`.
+- **Graphing:** plot up to 6 equations on one graph, zoom and pan with mouse, touch or keyboard, trace values, and find intersections and x-axis crossings.
 
 **Library, 1,203 functions in 50 categories, for example:**
 
@@ -247,7 +248,9 @@ Each module can be tested on its own, and `scicalc/MODULES.md` describes what ev
 
 - Higher-precision mode (`Decimal`-based arithmetic)
 - Edit and recall entries in the history
-- Graph plotting in the app
+- 3D graphs, and graphs of parametric and polar curves
+- Symbolic maths (derivatives, integrals, simplification, equation solving with steps)
+- Educational mode (explanations and practice problems)
 - Packaged desktop and phone installers
 
 ## License and credit

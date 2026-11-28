@@ -1,10 +1,11 @@
 /* written by build_app.py - do not edit */
-self.ASSET_VERSION = "f81ffe5f7d61";
+self.ASSET_VERSION = "a931772c5bf9";
 self.ASSETS = [
  "./",
  "index.html",
  "style.css",
  "app.js",
+ "graph.js",
  "credits.js",
  "engine.js",
  "py-worker.js",

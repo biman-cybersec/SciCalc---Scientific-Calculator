@@ -4,7 +4,7 @@ importScripts("assets.js");                     // defines ASSET_VERSION and ASS
 const CACHE = "scicalc-" + ASSET_VERSION;
 
 self.addEventListener("install", function (ev) {
-  ev.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); }));
+  ev.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS.map(function (u) { return new Request(u, { cache: "reload" }); }))   // "reload": never take a stale copy from the browser cache; }).then(function () { return self.skipWaiting(); }));
 });
 
 self.addEventListener("activate", function (ev) {

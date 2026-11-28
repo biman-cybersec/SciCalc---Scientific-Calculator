@@ -57,6 +57,7 @@
     <aside class="panel" aria-label="Tools">
       <div class="tabs" role="tablist" id="tabs">
         <button role="tab" aria-selected="true" data-tab="history">History</button>
+        <button role="tab" aria-selected="false" data-tab="graph">Graph</button>
         <button role="tab" aria-selected="false" data-tab="functions">Functions</button>
         <button role="tab" aria-selected="false" data-tab="constants">Constants</button>
         <button role="tab" aria-selected="false" data-tab="memory">Memory</button>
@@ -64,6 +65,8 @@
       </div>
 
       <div class="tabpane" id="tab-history" role="tabpanel"></div>
+
+      <div class="tabpane" id="tab-graph" role="tabpanel" hidden></div>
 
       <div class="tabpane" id="tab-functions" role="tabpanel" hidden>
         <div class="row">
@@ -92,6 +95,7 @@
 
 <script src="credits.js"></script>
 <script src="engine.js"></script>
+<script src="graph.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

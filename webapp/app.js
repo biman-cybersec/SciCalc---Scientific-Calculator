@@ -182,9 +182,10 @@
   /* ------------------------------------------------------------------ tabs */
   function openTab(name) {
     document.querySelectorAll("#tabs button").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false"); });
-    ["history", "functions", "constants", "memory", "settings"].forEach(function (t) { $("tab-" + t).hidden = t !== name; });
+    ["history", "graph", "functions", "constants", "memory", "settings"].forEach(function (t) { $("tab-" + t).hidden = t !== name; });
     if (name === "memory") renderMemory();
     if (name === "history") renderHistory();
+    if (name === "graph" && window.SciGraph) window.SciGraph.show();
   }
 
   function renderHistory() {
@@ -500,6 +501,7 @@
       fillCategorySelect($("fnCat"), fnRows, "All categories");
       fillCategorySelect($("coCat"), coRows, "All categories");
       renderFunctions(); renderConstants(); renderModes(); renderSettings(); renderHistory();
+      if (window.SciGraph) window.SciGraph.init({ engine: engine, el: el, store: store, toast: toast, getLine: function () { return expr.value; } });
       $("loading").hidden = true;
       setStatus("ready", navigator.serviceWorker && navigator.serviceWorker.controller ? "ready · works offline" : "ready");
       expr.focus({ preventScroll: true });

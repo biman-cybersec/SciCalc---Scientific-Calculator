@@ -35,13 +35,14 @@ def main():
         print("Missing Pyodide files:", ", ".join(missing), "\nRun  python get_pyodide.py  once (needs internet).")
         return 1
     build_zip()
-    files = ["index.html", "style.css", "app.js", "credits.js", "engine.js", "py-worker.js", "manifest.webmanifest", "scicalc.zip"]
+    files = ["index.html", "style.css", "app.js", "graph.js", "credits.js", "engine.js", "py-worker.js", "manifest.webmanifest", "scicalc.zip"]
     files += sorted("icons/" + f for f in os.listdir(os.path.join(WEB, "icons")))
     files += ["pyodide/" + f for f in PYO]
     h = hashlib.sha256()
     for f in files:
         h.update(f.encode())
         h.update(open(os.path.join(WEB, f), "rb").read())
+    h.update(open(os.path.join(WEB, "sw.js"), "rb").read())            # a new service worker also means a new version
     version = h.hexdigest()[:12]
     with open(os.path.join(WEB, "assets.js"), "w", encoding="utf-8") as fh:
         fh.write("/* written by build_app.py - do not edit */\nself.ASSET_VERSION = %s;\nself.ASSETS = %s;\n" % (json.dumps(version), json.dumps(["./"] + files, indent=1)))
